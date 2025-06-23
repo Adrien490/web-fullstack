@@ -1,0 +1,27 @@
+.navbar {
+  border-bottom: 1px solid #ddd;
+  padding: 1rem;
+}
+
+.navbar-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-title {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.nav-link {
+  color: #1976d2;
+  text-decoration: none;
+  margin-left: 1rem;
+}
+
+.nav-link:hover {
+  text-decoration: underline;
+}

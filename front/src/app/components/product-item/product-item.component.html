@@ -1,0 +1,40 @@
+<div class="product-item-container">
+  <div *ngIf="loading" class="loading">Chargement du produit...</div>
+
+  <div *ngIf="error" class="error">
+    {{ error }}
+  </div>
+
+  <div *ngIf="!loading && !error && product" class="product-detail">
+    <button (click)="goBack()" class="back-button">Retour à la liste</button>
+
+    <div class="product-content">
+      <h1>{{ product.name }}</h1>
+
+      <div class="product-info">
+        <div class="description-section">
+          <h3>Description</h3>
+          <p>{{ product.description || "Aucune description disponible" }}</p>
+        </div>
+
+        <div class="price-section">
+          <h3>Prix</h3>
+          <p class="price">
+            {{ product.price | currency : "EUR" : "symbol" : "1.2-2" }}
+          </p>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="add-to-cart">Ajouter au panier</button>
+        <a routerLink="/products" class="continue-shopping"
+          >Continuer les achats</a
+        >
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!loading && !error && !product" class="no-product">
+    Produit non trouvé.
+  </div>
+</div>

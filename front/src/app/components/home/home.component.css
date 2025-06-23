@@ -1,0 +1,21 @@
+.home-container {
+  text-align: center;
+  padding: 3rem 1rem;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+h1 {
+  color: #1976d2;
+  margin-bottom: 1rem;
+}
+
+p {
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.cta-button {
+  color: #1976d2;
+  text-decoration: underline;
+}
