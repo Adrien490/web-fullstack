@@ -2,100 +2,69 @@ const express = require("express");
 const router = express.Router();
 const { query } = require("../config/database");
 
-const DEFAULT_USER_ID = 1;
-
 router.get("/", async (req, res) => {
 	try {
 		const result = await query(`
-			SELECT o.*, u.name as user_name, u.email as user_email 
+			SELECT o.*, 
+				(SELECT COUNT(*) FROM order_products WHERE order_id = o.id) as items_count
 			FROM orders o 
-			JOIN users u ON o.user_id = u.id 
 			ORDER BY o.created_at DESC
 		`);
 		res.json(result.rows);
 	} catch (error) {
-		res.status(500).json({ error: "Database error" });
-	}
-});
-
-router.get("/:id", async (req, res) => {
-	try {
-		const orderResult = await query(
-			`
-			SELECT o.*, u.name as user_name, u.email as user_email 
-			FROM orders o 
-			JOIN users u ON o.user_id = u.id 
-			WHERE o.id = $1
-		`,
-			[req.params.id]
-		);
-
-		if (orderResult.rows.length === 0) {
-			return res.status(404).json({ error: "Not found" });
-		}
-
-		const productsResult = await query(
-			`
-			SELECT op.*, p.name, p.description 
-			FROM order_products op 
-			JOIN products p ON op.product_id = p.id 
-			WHERE op.order_id = $1
-		`,
-			[req.params.id]
-		);
-
-		const order = orderResult.rows[0];
-		order.products = productsResult.rows;
-
-		res.json(order);
-	} catch (error) {
-		res.status(500).json({ error: "Database error" });
+		res.status(500).json({ error: "Erreur de base de données" });
 	}
 });
 
 router.post("/", async (req, res) => {
 	try {
-		const { products } = req.body;
+		const { user_id, items } = req.body;
 
+		if (!user_id || !items || !Array.isArray(items) || items.length === 0) {
+			return res.status(400).json({ error: "Données invalides" });
+		}
+
+		// Calculer le total
 		let total = 0;
-		const productDetails = [];
-
-		for (const item of products) {
+		for (const item of items) {
 			const productResult = await query(
-				"SELECT * FROM products WHERE id = $1",
+				"SELECT price FROM products WHERE id = $1",
 				[item.product_id]
 			);
 			if (productResult.rows.length === 0) {
 				return res
 					.status(400)
-					.json({ error: `Product ${item.product_id} not found` });
+					.json({ error: `Produit ${item.product_id} non trouvé` });
 			}
-			const product = productResult.rows[0];
-			const subtotal = product.price * item.quantity;
-			total += subtotal;
-			productDetails.push({
-				...item,
-				price: product.price,
-				subtotal,
-			});
+			total += productResult.rows[0].price * item.quantity;
 		}
 
+		// Créer la commande
 		const orderResult = await query(
 			"INSERT INTO orders (user_id, total) VALUES ($1, $2) RETURNING *",
-			[DEFAULT_USER_ID, total]
+			[user_id, total]
 		);
+
 		const order = orderResult.rows[0];
 
-		for (const detail of productDetails) {
+		// Ajouter les produits à la commande
+		for (const item of items) {
+			const productResult = await query(
+				"SELECT price FROM products WHERE id = $1",
+				[item.product_id]
+			);
+			const price = productResult.rows[0].price;
+
 			await query(
 				"INSERT INTO order_products (order_id, product_id, quantity, price) VALUES ($1, $2, $3, $4)",
-				[order.id, detail.product_id, detail.quantity, detail.price]
+				[order.id, item.product_id, item.quantity, price]
 			);
 		}
 
 		res.status(201).json(order);
 	} catch (error) {
-		res.status(500).json({ error: "Database error" });
+		console.error("Erreur création commande:", error);
+		res.status(500).json({ error: "Erreur de base de données" });
 	}
 });
 
@@ -105,11 +74,11 @@ router.delete("/:id", async (req, res) => {
 			req.params.id,
 		]);
 		if (result.rows.length === 0) {
-			return res.status(404).json({ error: "Not found" });
+			return res.status(404).json({ error: "Commande non trouvée" });
 		}
-		res.json({ message: "Deleted", order: result.rows[0] });
+		res.json({ message: "Supprimé", order: result.rows[0] });
 	} catch (error) {
-		res.status(500).json({ error: "Database error" });
+		res.status(500).json({ error: "Erreur de base de données" });
 	}
 });
 

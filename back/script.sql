@@ -4,6 +4,10 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
     name VARCHAR(255) NOT NULL,
+    firstname VARCHAR(255),
+    lastname VARCHAR(255),
+    address TEXT,
+    phone VARCHAR(20),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -36,15 +40,15 @@ CREATE TABLE IF NOT EXISTS order_products (
 );
 
 -- Données de test
-INSERT INTO users (email, password, name) VALUES
-('user1@test.com', 'password123', 'Adrien Poirier');
+INSERT INTO users (email, password, name, firstname, lastname, address, phone) VALUES
+('user1@test.com', 'password123', 'Adrien', 'Adrien', 'Poirier', '123 Rue à Nantes, 44000 Nantes', '0612345678');
 
 INSERT INTO products (name, description, price) VALUES
-('MacBook Pro 14"', 'Ordinateur portable Apple avec puce M3', 2399.99),
-('iPhone 15 Pro', 'Smartphone Apple dernière génération', 1229.99),
-('AirPods Pro 2', 'Écouteurs sans fil avec réduction de bruit', 279.99),
-('iPad Air', 'Tablette Apple 10.9 pouces', 789.99),
-('Apple Watch Series 9', 'Montre connectée Apple', 449.99);
+('MacBook Pro M4', 'Ordinateur portable Apple avec puce M4', 2399.99),
+('iPhone 16', 'Smartphone Apple', 999.99),
+('AirPods Pro', 'Écouteurs sans fil', 279.99),
+('iPad Pro', 'Tablette Apple', 789.99),
+('Apple Watch Series', 'Montre connectée Apple', 449.99);
 
 INSERT INTO orders (user_id, total) VALUES
 (1, 1199.98);

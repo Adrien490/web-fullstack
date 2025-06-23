@@ -1,24 +1,31 @@
-<div class="product-list-container">
-  <div *ngIf="loading" class="loading">Chargement des produits...</div>
+<div class="container">
+  <h1>Les produits</h1>
+  <div *ngIf="loading" class="loading">Chargement...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
 
-  <div *ngIf="error" class="error">
-    {{ error }}
-  </div>
-
-  <div *ngIf="!loading && !error" class="products-grid">
-    <div *ngFor="let product of products" class="product-card">
-      <h3>{{ product.name }}</h3>
-      <p class="description">
-        {{ product.description || "Aucune description" }}
+  <div
+    *ngIf="!loading && !error"
+    class="grid"
+    style="grid-template-columns: repeat(auto-fill, minmax(250px, 1fr))"
+  >
+    <article
+      *ngFor="let product of products"
+      class="p-1"
+      style="border: 1px solid var(--border)"
+    >
+      <h2>{{ product.name }}</h2>
+      <p>{{ product.description || "Aucune description" }}</p>
+      <p>
+        <strong>{{ product.price }}€</strong>
       </p>
-      <p class="price">{{ product.price }}€</p>
-      <a [routerLink]="['/products', product.id]" class="product-link">
-        Voir ce produit
-      </a>
-    </div>
+      <a [routerLink]="['/products', product.id]">Voir détails</a>
+      <button class="btn-success" (click)="addToCart(product)">
+        Ajouter au panier
+      </button>
+    </article>
   </div>
 
-  <div *ngIf="!loading && !error && products.length === 0" class="no-products">
+  <p *ngIf="!loading && !error && products.length === 0" class="text-center">
     Aucun produit disponible.
-  </div>
+  </p>
 </div>

@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { CartService } from '../../services/cart.service';
 import { Product, ProductService } from '../../services/product.service';
 
 @Component({
   selector: 'app-product-item',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './product-item.component.html',
   styleUrl: './product-item.component.css',
 })
@@ -13,11 +15,12 @@ export class ProductItemComponent implements OnInit {
   product: Product | null = null;
   loading = true;
   error: string | null = null;
+  quantity: number = 1;
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
-    private productService: ProductService
+    private productService: ProductService,
+    private cartService: CartService
   ) {}
 
   ngOnInit(): void {
@@ -36,15 +39,16 @@ export class ProductItemComponent implements OnInit {
         this.product = data;
         this.loading = false;
       },
-      error: (err) => {
+      error: () => {
         this.error = 'Erreur lors du chargement du produit';
         this.loading = false;
-        console.error('Error loading product:', err);
       },
     });
   }
 
-  goBack(): void {
-    this.router.navigate(['/products']);
+  addToCart(): void {
+    if (this.product) {
+      this.cartService.addToCart(this.product, this.quantity);
+    }
   }
 }

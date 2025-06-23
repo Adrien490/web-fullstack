@@ -1,17 +1,16 @@
 const express = require("express");
 const cors = require("cors");
-require("dotenv").config();
 
-const productRoutes = require("./routes/products");
-const userRoutes = require("./routes/users");
-const orderRoutes = require("./routes/orders");
+const usersRoutes = require("./routes/users");
+const productsRoutes = require("./routes/products");
+const ordersRoutes = require("./routes/orders");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(
 	cors({
-		origin: process.env.FRONTEND_URL,
+		origin: ["http://localhost:4200", "http://127.0.0.1:4200"],
 		credentials: true,
 	})
 );
@@ -19,31 +18,30 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const API_PREFIX = process.env.API_PREFIX || "/api";
-app.use(`${API_PREFIX}/products`, productRoutes);
-app.use(`${API_PREFIX}/users`, userRoutes);
-app.use(`${API_PREFIX}/orders`, orderRoutes);
+app.use("/api/users", usersRoutes);
+app.use("/api/products", productsRoutes);
+app.use("/api/orders", ordersRoutes);
 
-app.use((req, res) => {
+app.get("/", (req, res) => {
+	res.json({ message: "API Web Full Stack" });
+});
+
+app.use("*", (req, res) => {
 	res.status(404).json({
-		error: "Not Found",
-		message: "The requested resource does not exist",
+		error: "Page non trouvée",
+		message: "Cette route n'existe pas",
 	});
 });
 
 app.use((err, req, res, next) => {
-	const status = err.status || 500;
-	const message = err.message || "Internal Server Error";
-
-	res.status(status).json({
-		success: false,
+	res.status(500).json({
 		error: {
-			message,
-			status,
+			message: "Erreur interne du serveur",
+			...(process.env.NODE_ENV === "development" && { stack: err.stack }),
 		},
 	});
 });
 
 app.listen(PORT, () => {
-	console.log(`Server running on port ${PORT}`);
+	console.log(`Serveur démarré sur le port ${PORT}`);
 });

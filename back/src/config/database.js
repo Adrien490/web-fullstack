@@ -1,14 +1,11 @@
 const { Pool } = require("pg");
-require("dotenv").config();
 
 const pool = new Pool({
-	connectionString: process.env.DATABASE_URL,
-	ssl:
-		process.env.NODE_ENV === "production"
-			? {
-					rejectUnauthorized: false,
-			  }
-			: false,
+	connectionString:
+		"postgresql://neondb_owner:npg_mifpwG5VaOz8@ep-mute-tooth-a8xtg1gm-pooler.eastus2.azure.neon.tech/neondb?sslmode=require",
+	ssl: {
+		rejectUnauthorized: false,
+	},
 });
 
 module.exports = {

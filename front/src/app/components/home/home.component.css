@@ -1,4 +1,4 @@
-.home-container {
+.container {
   text-align: center;
   padding: 3rem 1rem;
   max-width: 600px;
@@ -6,16 +6,12 @@
 }
 
 h1 {
-  color: #1976d2;
+  font-size: 2.5rem;
   margin-bottom: 1rem;
 }
 
 p {
-  color: #666;
+  font-size: 1.2rem;
   margin-bottom: 2rem;
-}
-
-.cta-button {
-  color: #1976d2;
-  text-decoration: underline;
+  color: var(--text-light);
 }

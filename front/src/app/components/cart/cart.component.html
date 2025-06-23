@@ -1,0 +1,70 @@
+<div class="container">
+  <h1>Mon Panier</h1>
+
+  <div *ngIf="(cartItems$ | async)?.length === 0" class="text-center p-1">
+    <p>Votre panier est vide</p>
+    <a routerLink="/products" class="btn">Continuer mes achats</a>
+  </div>
+
+  <div *ngIf="(cartItems$ | async)?.length! > 0">
+    <table role="table" aria-label="Articles du panier">
+      <thead>
+        <tr>
+          <th scope="col">Produit</th>
+          <th scope="col">Prix</th>
+          <th scope="col">Quantité</th>
+          <th scope="col">Total</th>
+          <th scope="col"><span class="sr-only">Actions</span></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of cartItems$ | async">
+          <td>
+            <strong>{{ item.product.name }}</strong
+            ><br />
+            <small>{{ item.product.description }}</small>
+          </td>
+          <td>{{ item.product.price | currency : "EUR" }}</td>
+          <td>
+            <input
+              type="number"
+              [value]="item.quantity"
+              (change)="updateQuantity(item.product.id, $event)"
+              min="1"
+              style="width: 60px"
+              [attr.aria-label]="'Quantité pour ' + item.product.name"
+            />
+          </td>
+          <td>{{ item.product.price * item.quantity | currency : "EUR" }}</td>
+          <td>
+            <button
+              class="btn-danger"
+              (click)="removeItem(item.product.id)"
+              [attr.aria-label]="'Supprimer ' + item.product.name"
+            >
+              ✕
+            </button>
+          </td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3"><strong>Total</strong></td>
+          <td colspan="2">
+            <strong>{{ totalPrice }}€</strong>
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="mt-1">
+      <button class="btn-secondary" (click)="clearCart()">
+        Vider le panier
+      </button>
+      <button class="btn" (click)="checkout()" [disabled]="isProcessingOrder">
+        {{ isProcessingOrder ? "Traitement..." : "Passer commande" }}
+      </button>
+      <a routerLink="/products">Continuer mes achats</a>
+    </div>
+  </div>
+</div>

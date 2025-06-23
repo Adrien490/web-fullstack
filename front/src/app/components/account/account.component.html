@@ -1,0 +1,103 @@
+<div class="container">
+  <h1>Mon Compte</h1>
+
+  <div *ngIf="loading" class="loading">Chargement...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div *ngIf="!loading && !error && user">
+    <section>
+      <h2>Informations personnelles</h2>
+
+      <div *ngIf="!isEditing">
+        <p><strong>Nom :</strong> {{ user.lastname || "-" }}</p>
+        <p><strong>Prénom :</strong> {{ user.firstname || "-" }}</p>
+        <p><strong>Email :</strong> {{ user.email }}</p>
+        <p><strong>Téléphone :</strong> {{ user.phone || "-" }}</p>
+        <p><strong>Adresse :</strong> {{ user.address || "-" }}</p>
+        <button class="btn" (click)="startEdit()">Modifier</button>
+      </div>
+
+      <form *ngIf="isEditing" (ngSubmit)="saveUser()">
+        <div>
+          <label>Nom :</label>
+          <input
+            type="text"
+            [(ngModel)]="editedUser.lastname"
+            name="lastname"
+          />
+        </div>
+
+        <div>
+          <label>Prénom :</label>
+          <input
+            type="text"
+            [(ngModel)]="editedUser.firstname"
+            name="firstname"
+          />
+        </div>
+
+        <div>
+          <label>Email :</label>
+          <input
+            type="email"
+            [(ngModel)]="editedUser.email"
+            name="email"
+            required
+          />
+        </div>
+
+        <div>
+          <label>Téléphone :</label>
+          <input type="tel" [(ngModel)]="editedUser.phone" name="phone" />
+        </div>
+
+        <div>
+          <label>Adresse :</label>
+          <textarea
+            [(ngModel)]="editedUser.address"
+            name="address"
+            rows="3"
+          ></textarea>
+        </div>
+
+        <div class="mt-1">
+          <button type="submit" class="btn" [disabled]="isSaving">
+            {{ isSaving ? "Enregistrement..." : "Enregistrer" }}
+          </button>
+          <button type="button" class="btn-secondary" (click)="cancelEdit()">
+            Annuler
+          </button>
+        </div>
+      </form>
+    </section>
+
+    <section class="mt-1">
+      <h2>Historique des commandes</h2>
+
+      <p *ngIf="orders.length === 0" class="text-center">Aucune commande.</p>
+
+      <table *ngIf="orders.length > 0">
+        <thead>
+          <tr>
+            <th>N°</th>
+            <th>Date</th>
+            <th>Produits</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let order of orders">
+            <td>#{{ order.id }}</td>
+            <td>{{ order.created_at | date : "dd/MM/yyyy" }}</td>
+            <td>
+              <div *ngFor="let product of order.products">
+                {{ product.quantity }}x {{ product.name }}
+              </div>
+            </td>
+            <td>{{ order.total }}€</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+</div>
