@@ -25,3 +25,4 @@ ng serve
 Le frontend sera accessible sur `http://localhost:4200`
 
 L'url du backend et les credentials de la bdd sont en dur dans le code pour faciliter la correction.
+BDD hebergée sur NeonDB
